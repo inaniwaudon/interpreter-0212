@@ -3,11 +3,12 @@ namespace Interpreter;
 public class Evaluator
 {
     private readonly Expr _expr;
-    private static readonly Dictionary<string, dynamic?> Envs = new();
+    private readonly Dictionary<string, dynamic?> _envs;
 
-    public Evaluator(Expr expr)
+    public Evaluator(Expr expr, Dictionary<string, dynamic?> envs)
     {
         _expr = expr;
+        _envs = envs;
     }
 
     public dynamic? Evaluate()
@@ -24,38 +25,36 @@ public class Evaluator
         }
         if (_expr is Seq seq)
         {
-            dynamic? result = null;
-            foreach (var body in seq.Bodies)
-            {
-                var evaluator = new Evaluator(body);
-                result = evaluator.Evaluate();
-            }
-            return result;
+            return EvaluateExprs(seq.Bodies);
         }
         if (_expr is Assignment assignment)
         {
-            var evaluator = new Evaluator(assignment.Expr);
-            Envs[assignment.Name] = evaluator.Evaluate();
-            return Envs[assignment.Name];
+            var evaluator = new Evaluator(assignment.Expr, _envs);
+            _envs[assignment.Name] = evaluator.Evaluate();
+            return _envs[assignment.Name];
         }
         if (_expr is Ident ident)
         {
-            return Envs[ident.Name];
+            return _envs[ident.Name];
         }
         if (_expr is If iif)
         {
-            var conditionEvaluator = new Evaluator(iif.Condition);
+            var conditionEvaluator = new Evaluator(iif.Condition, _envs);
             var condition = conditionEvaluator.Evaluate();
-            var evaluator = new Evaluator(condition ? iif.ThenClause : iif.ElseClause);
+            var evaluator = new Evaluator(condition ? iif.ThenClause : iif.ElseClause, _envs);
             return evaluator.Evaluate();
+        }
+        if (_expr is While wwhile)
+        {
+            return EvaluateWhile(wwhile);
         }
         throw new ArgumentException();
     }
 
-    private static dynamic? EvaluateMathExpr(BinExpr binExpr)
+    private dynamic? EvaluateMathExpr(BinExpr binExpr)
     {
-        var leftEvaluator = new Evaluator(binExpr.Lhs);
-        var rightEvaluator = new Evaluator(binExpr.Rhs);
+        var leftEvaluator = new Evaluator(binExpr.Lhs, _envs);
+        var rightEvaluator = new Evaluator(binExpr.Rhs, _envs);
         return binExpr.Op switch
         {
             "+" => leftEvaluator.Evaluate() + rightEvaluator.Evaluate(),
@@ -66,10 +65,10 @@ public class Evaluator
         };
     }
 
-    private static dynamic? EvaluateCompExpr(BinExpr binExpr)
+    private dynamic? EvaluateCompExpr(BinExpr binExpr)
     {
-        var leftEvaluator = new Evaluator(binExpr.Lhs);
-        var rightEvaluator = new Evaluator(binExpr.Rhs);
+        var leftEvaluator = new Evaluator(binExpr.Lhs, _envs);
+        var rightEvaluator = new Evaluator(binExpr.Rhs, _envs);
         return binExpr.Op switch
         {
             "<" => leftEvaluator.Evaluate() < rightEvaluator.Evaluate(),
@@ -80,5 +79,26 @@ public class Evaluator
             "!=" => leftEvaluator.Evaluate() != rightEvaluator.Evaluate(),
             _ => null,
         };
+    }
+
+    private dynamic? EvaluateExprs(Expr[] exprs)
+    {
+        dynamic? result = null;
+        foreach (var body in exprs)
+        {
+            var evaluator = new Evaluator(body, _envs);
+            result = evaluator.Evaluate();
+        }
+        return result;
+    }
+
+    private dynamic? EvaluateWhile(While wwhile)
+    {
+        var condition = new Evaluator(wwhile.Condition, _envs);
+        while (condition.Evaluate())
+        {
+            EvaluateExprs(wwhile.Bodies);
+        }
+        return null;
     }
 }

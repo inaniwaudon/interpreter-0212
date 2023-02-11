@@ -14,7 +14,8 @@ public class IfTest
                 BinExpr.TGt(IntValue.TInt(1), IntValue.TInt(2)),
                 IntValue.TInt(2),
                 IntValue.TInt(1)
-            )
+            ),
+            new()
         );
         Assert.Equal(1, evaluator.Evaluate());
     }
