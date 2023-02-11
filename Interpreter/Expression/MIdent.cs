@@ -1,6 +1,6 @@
-namespace Interpleter;
+namespace Interpreter;
 
-public abstract class MIdent : Expr
+public class MIdent : Expr
 {
     internal string Name { get; }
 

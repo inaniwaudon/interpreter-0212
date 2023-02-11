@@ -1,4 +1,4 @@
-namespace Interpleter;
+namespace Interpreter;
 
 public class Parser
 {

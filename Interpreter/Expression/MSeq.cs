@@ -1,6 +1,6 @@
-namespace Interpleter;
+namespace Interpreter;
 
-public abstract class MSeq : Expr
+public class MSeq : Expr
 {
     internal Expr[] Bodies { get; }
 

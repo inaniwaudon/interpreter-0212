@@ -1,4 +1,4 @@
-namespace Interpleter;
+namespace Interpreter;
 
 public class Evaluator
 {
@@ -52,9 +52,9 @@ public class Evaluator
         return binExpr.Op switch
         {
             "+" => leftEvaluator.Evaluate() + rightEvaluator.Evaluate(),
-            "*" => leftEvaluator.Evaluate() + rightEvaluator.Evaluate(),
-            "-" => leftEvaluator.Evaluate() + rightEvaluator.Evaluate(),
-            "/" => leftEvaluator.Evaluate() + rightEvaluator.Evaluate(),
+            "*" => leftEvaluator.Evaluate() * rightEvaluator.Evaluate(),
+            "-" => leftEvaluator.Evaluate() - rightEvaluator.Evaluate(),
+            "/" => leftEvaluator.Evaluate() / rightEvaluator.Evaluate(),
             _ => null,
         };
     }

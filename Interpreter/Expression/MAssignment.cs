@@ -1,6 +1,6 @@
-namespace Interpleter;
+namespace Interpreter;
 
-public abstract class MAssignment : Expr
+public class MAssignment : Expr
 {
     internal string Name { get; }
     internal Expr Expr { get; }

@@ -1,4 +1,4 @@
-namespace Interpleter;
+namespace Interpreter;
 
 public readonly struct Token
 {

@@ -1,5 +1,5 @@
 using System.Text;
-namespace Interpleter;
+namespace Interpreter;
 
 public class Lexer
 {
