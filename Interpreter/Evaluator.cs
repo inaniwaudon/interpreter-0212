@@ -2,81 +2,104 @@ namespace Interpreter;
 
 public class Evaluator
 {
-    private readonly Expr _expr;
-    private readonly Dictionary<string, dynamic?> _envs;
+    private readonly Dictionary<string, dynamic?> _envs = new();
 
-    public Evaluator(Expr expr, Dictionary<string, dynamic?> envs)
+    public Evaluator() { }
+
+    internal Evaluator(Dictionary<string, dynamic?> envs)
     {
-        _expr = expr;
         _envs = envs;
     }
 
-    public dynamic? Evaluate()
+    public dynamic? EvaluateProgram(CustomProgram program)
     {
-        if (_expr is BinExpr binExpr)
+        foreach (Function func in program.Functions)
+        {
+            _envs[func.Name] = func;
+        }
+
+        dynamic? result = null;
+        foreach (Expr body in program.Bodies)
+        {
+            result = Evaluate(body);
+        }
+        return result;
+    }
+
+    public dynamic? Evaluate(Expr expr)
+    {
+        if (expr is BinExpr binExpr)
         {
             return EvaluateMathExpr(binExpr)
                 ?? EvaluateCompExpr(binExpr)
                 ?? throw new ArgumentException();
         }
-        if (_expr is IntValue intValue)
+        if (expr is IntValue intValue)
         {
             return intValue.Value;
         }
-        if (_expr is Seq seq)
+        if (expr is Seq seq)
         {
             return EvaluateExprs(seq.Bodies);
         }
-        if (_expr is Assignment assignment)
+        if (expr is Assignment assignment)
         {
-            var evaluator = new Evaluator(assignment.Expr, _envs);
-            _envs[assignment.Name] = evaluator.Evaluate();
+            _envs[assignment.Name] = Evaluate(assignment.Expr);
             return _envs[assignment.Name];
         }
-        if (_expr is Ident ident)
+        if (expr is Ident ident)
         {
             return _envs[ident.Name];
         }
-        if (_expr is If iif)
+        if (expr is If iif)
         {
-            var conditionEvaluator = new Evaluator(iif.Condition, _envs);
-            var condition = conditionEvaluator.Evaluate();
-            var evaluator = new Evaluator(condition ? iif.ThenClause : iif.ElseClause, _envs);
-            return evaluator.Evaluate();
+            dynamic? condition = Evaluate(iif.Condition);
+            return Evaluate(condition ? iif.ThenClause : iif.ElseClause);
         }
-        if (_expr is While wwhile)
+        if (expr is While wwhile)
         {
             return EvaluateWhile(wwhile);
+        }
+        if (expr is Call call)
+        {
+            dynamic? item = _envs[call.Name];
+            if (item is Function func)
+            {
+                dynamic?[] args = call.Args.Select(arg => Evaluate(arg)).ToArray();
+                var newEnvs = new Dictionary<string, dynamic?>(_envs);
+                for (int i = 0; i < func.Params.Length; i++)
+                {
+                    newEnvs[func.Params[i]] = i < args.Length ? args[i] : null;
+                }
+                var evaluator = new Evaluator(newEnvs);
+                return evaluator.Evaluate(func.Bodies);
+            }
         }
         throw new ArgumentException();
     }
 
     private dynamic? EvaluateMathExpr(BinExpr binExpr)
     {
-        var leftEvaluator = new Evaluator(binExpr.Lhs, _envs);
-        var rightEvaluator = new Evaluator(binExpr.Rhs, _envs);
         return binExpr.Op switch
         {
-            "+" => leftEvaluator.Evaluate() + rightEvaluator.Evaluate(),
-            "*" => leftEvaluator.Evaluate() * rightEvaluator.Evaluate(),
-            "-" => leftEvaluator.Evaluate() - rightEvaluator.Evaluate(),
-            "/" => leftEvaluator.Evaluate() / rightEvaluator.Evaluate(),
+            "+" => Evaluate(binExpr.Lhs) + Evaluate(binExpr.Rhs),
+            "*" => Evaluate(binExpr.Lhs) * Evaluate(binExpr.Rhs),
+            "-" => Evaluate(binExpr.Lhs) - Evaluate(binExpr.Rhs),
+            "/" => Evaluate(binExpr.Lhs) / Evaluate(binExpr.Rhs),
             _ => null,
         };
     }
 
     private dynamic? EvaluateCompExpr(BinExpr binExpr)
     {
-        var leftEvaluator = new Evaluator(binExpr.Lhs, _envs);
-        var rightEvaluator = new Evaluator(binExpr.Rhs, _envs);
         return binExpr.Op switch
         {
-            "<" => leftEvaluator.Evaluate() < rightEvaluator.Evaluate(),
-            ">" => leftEvaluator.Evaluate() > rightEvaluator.Evaluate(),
-            "<=" => leftEvaluator.Evaluate() <= rightEvaluator.Evaluate(),
-            ">=" => leftEvaluator.Evaluate() >= rightEvaluator.Evaluate(),
-            "==" => leftEvaluator.Evaluate() == rightEvaluator.Evaluate(),
-            "!=" => leftEvaluator.Evaluate() != rightEvaluator.Evaluate(),
+            "<" => Evaluate(binExpr.Lhs) < Evaluate(binExpr.Rhs),
+            ">" => Evaluate(binExpr.Lhs) > Evaluate(binExpr.Rhs),
+            "<=" => Evaluate(binExpr.Lhs) <= Evaluate(binExpr.Rhs),
+            ">=" => Evaluate(binExpr.Lhs) >= Evaluate(binExpr.Rhs),
+            "==" => Evaluate(binExpr.Lhs) == Evaluate(binExpr.Rhs),
+            "!=" => Evaluate(binExpr.Lhs) != Evaluate(binExpr.Rhs),
             _ => null,
         };
     }
@@ -86,16 +109,14 @@ public class Evaluator
         dynamic? result = null;
         foreach (var body in exprs)
         {
-            var evaluator = new Evaluator(body, _envs);
-            result = evaluator.Evaluate();
+            result = Evaluate(body);
         }
         return result;
     }
 
     private dynamic? EvaluateWhile(While wwhile)
     {
-        var condition = new Evaluator(wwhile.Condition, _envs);
-        while (condition.Evaluate())
+        while (Evaluate(wwhile.Condition))
         {
             EvaluateExprs(wwhile.Bodies);
         }

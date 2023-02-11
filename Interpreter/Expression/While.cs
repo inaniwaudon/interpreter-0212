@@ -5,7 +5,7 @@ public class While : Expr
     internal Expr Condition { get; }
     internal Expr[] Bodies { get; }
 
-    internal While(Expr condition, Expr[] bodies) : base(ExprType.IntValue)
+    internal While(Expr condition, Expr[] bodies) : base(ExprType.While)
     {
         Condition = condition;
         Bodies = bodies;

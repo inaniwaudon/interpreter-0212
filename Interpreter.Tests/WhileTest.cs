@@ -1,5 +1,3 @@
-using Interpreter;
-
 namespace Interpreter.Tests;
 
 public class WhileTest
@@ -7,7 +5,8 @@ public class WhileTest
     [Fact(DisplayName = "{i = 0; while(i < 10) { i = i + 1; }; i} == 10")]
     public void Test()
     {
-        var evaluator = new Evaluator
+        var evaluator = new Evaluator();
+        var result = evaluator.Evaluate
         (
             Seq.TSeq
             (
@@ -21,9 +20,8 @@ public class WhileTest
                     }
                 ),
                 Ident.TIdent("i")
-            ),
-            new()
+            )
         );
-        Assert.Equal(10, evaluator.Evaluate());
+        Assert.Equal(10, result);
     }
 }
