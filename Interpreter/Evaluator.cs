@@ -3,7 +3,7 @@ namespace Interpreter;
 public class Evaluator
 {
     private readonly Expr _expr;
-    private readonly Dictionary<string, dynamic?> Envs = new();
+    private static readonly Dictionary<string, dynamic?> Envs = new();
 
     public Evaluator(Expr expr)
     {
@@ -22,7 +22,7 @@ public class Evaluator
         {
             return intValue.Value;
         }
-        if (_expr is MSeq seq)
+        if (_expr is Seq seq)
         {
             dynamic? result = null;
             foreach (var body in seq.Bodies)
@@ -32,15 +32,22 @@ public class Evaluator
             }
             return result;
         }
-        if (_expr is MAssignment assignment)
+        if (_expr is Assignment assignment)
         {
             var evaluator = new Evaluator(assignment.Expr);
             Envs[assignment.Name] = evaluator.Evaluate();
             return Envs[assignment.Name];
         }
-        if (_expr is MIdent ident)
+        if (_expr is Ident ident)
         {
             return Envs[ident.Name];
+        }
+        if (_expr is If iif)
+        {
+            var conditionEvaluator = new Evaluator(iif.Condition);
+            var condition = conditionEvaluator.Evaluate();
+            var evaluator = new Evaluator(condition ? iif.ThenClause : iif.ElseClause);
+            return evaluator.Evaluate();
         }
         throw new ArgumentException();
     }

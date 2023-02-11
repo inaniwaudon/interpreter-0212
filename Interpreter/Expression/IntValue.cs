@@ -11,6 +11,6 @@ public class IntValue : Expr
 
     public static IntValue TInt(int value)
     {
-        return new IntValue(value);
+        return new(value);
     }
 }

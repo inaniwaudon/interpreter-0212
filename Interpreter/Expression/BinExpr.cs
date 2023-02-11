@@ -15,21 +15,51 @@ public class BinExpr : Expr
 
     public static BinExpr TAdd(Expr a, Expr b)
     {
-        return new BinExpr("+", a, b);
+        return new("+", a, b);
     }
 
     public static BinExpr TSub(Expr a, Expr b)
     {
-        return new BinExpr("-", a, b);
+        return new("-", a, b);
     }
 
     public static BinExpr TMul(Expr a, Expr b)
     {
-        return new BinExpr("*", a, b);
+        return new("*", a, b);
     }
 
     public static BinExpr TDiv(Expr a, Expr b)
     {
-        return new BinExpr("/", a, b);
+        return new("/", a, b);
+    }
+
+    public static BinExpr TLt(Expr a, Expr b)
+    {
+        return new("<", a, b);
+    }
+
+    public static BinExpr TGt(Expr a, Expr b)
+    {
+        return new(">", a, b);
+    }
+
+    public static BinExpr TLte(Expr a, Expr b)
+    {
+        return new("<=", a, b);
+    }
+
+    public static BinExpr TGte(Expr a, Expr b)
+    {
+        return new(">=", a, b);
+    }
+
+    public static BinExpr TEq(Expr a, Expr b)
+    {
+        return new("==", a, b);
+    }
+
+    public static BinExpr TNeq(Expr a, Expr b)
+    {
+        return new("!=", a, b);
     }
 }
