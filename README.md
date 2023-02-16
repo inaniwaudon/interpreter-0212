@@ -13,8 +13,6 @@ dotnet run
 
 詳しくは [usage.md](./usage.md) を参照。
 
-`/Interpreter/Program.cs` に記述した抽象構文木が実行される。
-
 ## テスト
 
 ```

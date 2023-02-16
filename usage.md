@@ -76,12 +76,13 @@ var bodies = new Seq
 | `Assignment.TAssign(string name, Expr expr)` | `name = expr` |
 | `Ident.TIdent(string name)` | `name` |
 
-## 制御文
+## 制御文・連接
 
 | 記述 | 想定される機能 |
 | :--- | :--- |
 | `While.TWhile(Expr condition, Seq bodies)` | `while (condition) { bodies }` |
 | `If.TIf(Expr condition, Expr thenClause, Expr elseClause)` | `if (condition) { thenClause } else { elseClause }` |
+| `Seq.TSeq(params Expr[] bodies)` | `{ bodies[0]; bodies[1]; ... }` |
 
 ## 関数
 
