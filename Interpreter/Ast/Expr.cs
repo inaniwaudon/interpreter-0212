@@ -1,9 +1,7 @@
 namespace Interpreter;
 
-public abstract class Expr
+public abstract class Expr : Ast
 {
-    internal ExprType Type { get; }
-
     internal Expr(ExprType type)
     {
         Type = type;

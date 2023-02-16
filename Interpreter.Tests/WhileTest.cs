@@ -14,10 +14,10 @@ public class WhileTest
                 While.TWhile
                 (
                     BinExpr.TLt(Ident.TIdent("i"), IntValue.TInt(10)),
-                    new[]
+                    Seq.TSeq(new[]
                     {
                         Assignment.TAssign("i", BinExpr.TAdd(Ident.TIdent("i"), IntValue.TInt(1)))
-                    }
+                    })
                 ),
                 Ident.TIdent("i")
             )

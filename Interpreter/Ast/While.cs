@@ -3,15 +3,15 @@ namespace Interpreter;
 public class While : Expr
 {
     internal Expr Condition { get; }
-    internal Expr[] Bodies { get; }
+    internal Seq Bodies { get; }
 
-    internal While(Expr condition, Expr[] bodies) : base(ExprType.While)
+    internal While(Expr condition, Seq bodies) : base(ExprType.While)
     {
         Condition = condition;
         Bodies = bodies;
     }
 
-    public static While TWhile(Expr condition, Expr[] bodies)
+    public static While TWhile(Expr condition, Seq bodies)
     {
         return new(condition, bodies);
     }

@@ -2,17 +2,29 @@ namespace Interpreter;
 
 public class CustomProgram
 {
-    internal Function[] Functions { get; }
-    internal Expr[] Bodies { get; }
+    public CustomFunction[] CustomFunctions { get; }
+    public Expr[] Bodies { get; }
 
-    public CustomProgram(Function[] functions, Expr[] bodies)
+    public CustomProgram(CustomFunction[] functions, Seq bodies)
     {
-        Functions = functions;
-        Bodies = bodies;
+        CustomFunctions = functions;
+        Bodies = bodies.Bodies;
     }
 
-    public static CustomProgram TProgram(Function[] functions, Expr[] bodies)
+    public static CustomProgram TProgram(CustomFunction[] functions, Seq bodies)
     {
         return new(functions, bodies);
+    }
+
+    public override bool Equals(object? obj)
+    {
+        return obj is CustomProgram cp &&
+            cp.CustomFunctions.SequenceEqual(CustomFunctions) &&
+            cp.Bodies.SequenceEqual(Bodies);
+    }
+
+    public override int GetHashCode()
+    {
+        return new { CustomFunctions, Bodies }.GetHashCode();
     }
 }

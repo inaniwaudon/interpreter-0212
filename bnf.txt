@@ -1,0 +1,5 @@
+program := function | exprs + program
+function := "function" + name + "(" + args + ")" + "{" + exprs + "}"
+args := STRING | STRING + "," + args 
+exprs := expr | expr + expr
+expr := (assignment | binary | call | ident | if | int | value) + ";"

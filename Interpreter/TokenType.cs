@@ -1,7 +1,15 @@
 namespace Interpreter;
 
-enum TokenType
+public enum TokenType
 {
+    Assignment,
+    Bracket,
+    Comma,
+    Function,
+    If,
+    Numeric,
+    Semicolon,
     Sign,
-    Variable
+    Variable,
+    While,
 }

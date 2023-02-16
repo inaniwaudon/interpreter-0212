@@ -13,7 +13,7 @@ public class Evaluator
 
     public dynamic? EvaluateProgram(CustomProgram program)
     {
-        foreach (Function func in program.Functions)
+        foreach (CustomFunction func in program.CustomFunctions)
         {
             _envs[func.Name] = func;
         }
@@ -63,7 +63,7 @@ public class Evaluator
         if (expr is Call call)
         {
             dynamic? item = _envs[call.Name];
-            if (item is Function func)
+            if (item is CustomFunction func)
             {
                 dynamic?[] args = call.Args.Select(arg => Evaluate(arg)).ToArray();
                 var newEnvs = new Dictionary<string, dynamic?>(_envs);
@@ -118,7 +118,7 @@ public class Evaluator
     {
         while (Evaluate(wwhile.Condition))
         {
-            EvaluateExprs(wwhile.Bodies);
+            EvaluateExprs(wwhile.Bodies.Bodies);
         }
         return null;
     }
