@@ -4,12 +4,16 @@
 
 ## 実行
 
-[.NET 7.0](https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0) が必要です
+[.NET 7.0](https://dotnet.microsoft.com/ja-jp/download/dotnet/7.0) が必要です。
 
 ```bash
 cd Interpreter
 dotnet run
 ```
+
+詳しくは [usage.md](./usage.md) を参照。
+
+`/Interpreter/Program.cs` に記述した抽象構文木が実行される。
 
 ## テスト
 
