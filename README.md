@@ -15,8 +15,7 @@ dotnet run
 
 ## テスト
 
-```
-bash
+```bash
 cd Interpreter.Tests
 dotnet test
 ```
